@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""A module for filtering logs.
+"""filtering logs.
 """
 import os
 import re
@@ -8,24 +8,17 @@ import mysql.connector
 from typing import List
 
 
-patterns = {
-    'extract': lambda x, y: r'(?P<field>{})=[^{}]*'.format('|'.join(x), y),
-    'replace': lambda x: r'\g<field>={}'.format(x),
-}
-PII_FIELDS = ("name", "email", "phone", "ssn", "password")
-
-
 def filter_datum(
         fields: List[str], redaction: str, message: str, separator: str,
-        ) -> str:
+) -> str:
     """Filters a log line.
     """
-    extract, replace = (patterns["extract"], patterns["replace"])
-    return re.sub(extract(fields, separator), replace(redaction), message)
+    pattern = '|'.join([f'{field}=[^{separator}]*' for field in fields])
+    return re.sub(pattern, lambda m: f"{m.group(0).split('=')[0]}={redaction}", message)
 
 
 def get_logger() -> logging.Logger:
-    """Creates a new logger for user data.
+    """Creates a new logger
     """
     logger = logging.getLogger("user_data")
     stream_handler = logging.StreamHandler()
@@ -37,7 +30,7 @@ def get_logger() -> logging.Logger:
 
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
-    """Creates a connector to a database.
+    """Creates a connector.
     """
     db_host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
     db_name = os.getenv("PERSONAL_DATA_DB_NAME", "")
@@ -54,7 +47,7 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
 
 
 def main():
-    """Logs the information about user records in a table.
+    """Logs information.
     """
     fields = "name,email,phone,ssn,password,ip,last_login,user_agent"
     columns = fields.split(',')
