@@ -33,4 +33,12 @@ def not_authorized() -> str:
       - abort unauthorized access
     """
     abort(401)
-    return jsonify(stats)
+
+
+@app_views.route('/forbidden/', strict_slashes=False)
+def not_authorized() -> str:
+    """ GET /api/v1/unauthorized
+    Return:
+      - abort unauthorized access
+    """
+    abort(403)
