@@ -64,7 +64,7 @@ class BasicAuth(Auth):
         if (decoded_base64_authorization_header is None or
                 not isinstance(decoded_base64_authorization_header, str)):
             return None, None
-        pat = r'(?P<user>[^:]+):(?P<password>+'
+        pat = r'(?P<user>[^:]+):(?P<password>.+)'
         match = re.fullmatch(pat, decoded_base64_authorization_header.strip())
         if match is not None:
             return match.group('user'), match.group('password')
