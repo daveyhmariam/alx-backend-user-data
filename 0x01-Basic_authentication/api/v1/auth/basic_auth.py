@@ -34,15 +34,18 @@ class BasicAuth(Auth):
         if match is not None:
             return authorization_header.strip(match.group())
 
-    def decode_base64_authorization_header(self, base64_authorization_header: str) -> str:
+    def decode_base64_authorization_header(self,
+                                           base64_authorization_header: str) -> str:
         """returns the decoded value of a Base64 string
 
         Args:
             base64_authorization_header (str): encoded base64 string
         Returns:
-            str: decoded string in utf-8 format 
+            str: decoded string in utf-8 format
         """
-        if base64_authorization_header is None or not isinstance(base64_authorization_header, str):
+        if (base64_authorization_header is None or
+            not isinstance(base64_authorization_header,
+                           str)):
             return None
         try:
             decoded = base64.b64decode(
