@@ -35,7 +35,8 @@ class BasicAuth(Auth):
             return authorization_header.strip(match.group())
 
     def decode_base64_authorization_header(self,
-                                           base64_authorization_header: str) -> str:
+                                           base64_authorization_header:
+                                           str) -> str:
         """returns the decoded value of a Base64 string
 
         Args:
@@ -53,3 +54,18 @@ class BasicAuth(Auth):
             return decoded.decode('utf-8')
         except (binascii.Error, UnicodeDecodeError):
             return None
+
+    def extract_user_credentials(self,
+                                 decoded_base64_authorization_header:
+                                 str) -> (str, str):
+        """
+        returns the user email and password from the Base64 decoded value
+        """
+        if (decoded_base64_authorization_header is None or
+                not isinstance(decoded_base64_authorization_header, str)):
+            return None, None
+        pat = r'(?P<user>[^:]+):(?P<password>+'
+        match = re.fullmatch(pat, decoded_base64_authorization_header.strip())
+        if match is not None:
+            return match.group('user'), match.group('password')
+        return None, None
