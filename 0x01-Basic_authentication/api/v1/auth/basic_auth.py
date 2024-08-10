@@ -71,3 +71,17 @@ class BasicAuth(Auth):
         if match is not None:
             return match.group('user'), match.group('password')
         return None, None
+
+    def user_object_from_credentials(self, user_email: str,
+                                     user_pwd: str) -> TypeVar('User'):
+        """ returns the User instance based on his email and password.
+        """
+        if not user_email and not user_pwd:
+            return None
+        users = User.search({"email": user_email})
+        if users is None:
+            return None
+        for user in users:
+            if user.is_valid_password(user_pwd):
+                return user
+        return None
