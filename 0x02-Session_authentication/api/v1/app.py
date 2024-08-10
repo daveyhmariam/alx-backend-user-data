@@ -51,10 +51,11 @@ def authenticate():
                     '/api/v1/forbidden/']
         require_auth = auth.require_auth(request.path, excluded)
         if require_auth:
-            if auth.authorization_header(request) is None:
+            if auth.authorization_header(request) is None and \
+                auth.session_cookie(request) is None:
                 abort(401)
             user = auth.current_user(request)
-            if user:
+            if user :
                 request.current_user = auth.current_user(request)
                 abort(403)
 
@@ -62,4 +63,4 @@ def authenticate():
 if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
     port = getenv("API_PORT", "5000")
-    app.run(host=host, port=port)
+    app.run(host=host, port=port, debug=True)
