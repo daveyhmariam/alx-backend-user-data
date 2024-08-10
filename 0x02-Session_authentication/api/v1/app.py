@@ -51,12 +51,12 @@ def authenticate():
                     '/api/v1/forbidden/']
         require_auth = auth.require_auth(request.path, excluded)
         if require_auth:
-            if not auth.authorization_header(request):
+            if auth.authorization_header(request) is None:
                 abort(401)
-            if not auth.current_user(request):
+            user = auth.current_user(request)
+            if user:
+                request.current_user = auth.current_user(request)
                 abort(403)
-
-        request.current_user = auth.current_user(request)
 
 
 if __name__ == "__main__":
