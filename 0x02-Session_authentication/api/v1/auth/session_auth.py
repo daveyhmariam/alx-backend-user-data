@@ -48,7 +48,10 @@ class SessionAuth(Auth):
 
         Args:
             request (flask request object, optional): Defaults to None.
+        Return:
+            User object
         """
         sid = self.session_cookie(request)
         uid = self.user_id_for_session_id(sid)
         user = User.get(uid)
+        return user
