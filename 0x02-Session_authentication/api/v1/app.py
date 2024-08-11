@@ -55,7 +55,8 @@ def authenticate():
                     '/api/v1/auth_session/login/']
         require_auth = auth.require_auth(request.path, excluded)
         if require_auth:
-            if not auth.authorization_header(request):
+            if not auth.authorization_header(request) and\
+                    auth.session_cookie(request) is None:
                 abort(401)
             user = auth.current_user(request)
             if not auth.session_cookie:
