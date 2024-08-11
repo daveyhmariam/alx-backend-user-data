@@ -4,6 +4,7 @@ class definition of new authentication mechanism:
 """
 from api.v1.auth.auth import Auth
 from uuid import uuid4
+from models.user import User
 
 
 class SessionAuth(Auth):
@@ -41,3 +42,13 @@ class SessionAuth(Auth):
         if session_id is None or not isinstance(session_id, str):
             return None
         return self.user_id_by_session_id.get(session_id)
+
+    def current_user(self, request=None):
+        """return the current user object
+
+        Args:
+            request (flask request object, optional): Defaults to None.
+        """
+        sid = self.session_cookie(request)
+        uid = self.user_id_for_session_id(sid)
+        user = User.get(uid)
