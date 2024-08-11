@@ -51,12 +51,15 @@ def authenticate():
     if auth:
         excluded = ['/api/v1/status/',
                     '/api/v1/unauthorized/',
-                    '/api/v1/forbidden/']
+                    '/api/v1/forbidden/',
+                    '/api/v1/auth_session/login/']
         require_auth = auth.require_auth(request.path, excluded)
         if require_auth:
             if not auth.authorization_header(request):
                 abort(401)
             user = auth.current_user(request)
+            if not auth.session_cookie:
+                return None
             if user is None:
                 abort(403)
             request.current_user = user
