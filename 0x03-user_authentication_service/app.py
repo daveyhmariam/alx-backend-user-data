@@ -56,5 +56,23 @@ def login_sessions():
     return resp
 
 
+@app.route('/sessions', methods=['DELETE'], strict_slashes=False)
+def logout_sessions():
+    """logs out a user by destroying their session and
+        redirecting them to the homepage.
+
+    Returns:
+        _type_:
+    """
+    s_id = request.cookies.get('session_id', None)
+    if s_id is None:
+        abort(403)
+    user = AUTH.get_user_from_session_id(s_id)
+    if user is None:
+        abort(403)
+    AUTH.destroy_session(user.id)
+    return redirect('/')
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port="5000")
