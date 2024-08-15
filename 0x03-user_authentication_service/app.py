@@ -74,5 +74,62 @@ def logout_sessions():
     return redirect('/')
 
 
+@app.route('/profile', methods=['GET'], strict_slashes=False)
+def get_profile():
+    """etrieves the email of a user based on their
+        session ID stored in a cookie.
+
+    Returns:
+        _type_:
+    """
+    s_id = request.cookies.get('session_id', None)
+    if s_id is None:
+        abort(403)
+    user = AUTH.get_user_from_session_id(s_id)
+    if user is None:
+        abort(403)
+    return make_response(jsonify({'email': user.email}), 200)
+
+
+@app.route('/reset_password', methods=['POST'], strict_slashes=False)
+def reset_password_token():
+    """returning a JSON response with the
+    email and reset token in the format:
+
+    Returns:
+        _type_:
+    """
+    email = request.form.get('email', None)
+    if email is None:
+        abort(403)
+    try:
+        rest_token = AUTH.get_reset_password_token(email)
+    except ValueError:
+        abort(403)
+    return make_response(jsonify({"email": email,
+                                  "reset_token": rest_token}), 200)
+
+
+@app.route('/reset_password', methods=['PUT'], strict_slashes=False)
+def update_password():
+    """updates a user's password using a
+    reset token and returns a JSON response.
+
+    Returns:
+        _type_:
+    """
+    email = request.form.get('email', None)
+    reset_token = request.form.get('reset_token', None)
+    password = request.form.get('new_password', None)
+    if not email or not reset_token or not password:
+        abort(400)
+    try:
+        AUTH.update_password(reset_token, password)
+    except ValueError:
+        abort(403)
+    return make_response(jsonify({"email": email,
+                                  "message": "Password updated"}), 200)
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port="5000")
