@@ -76,7 +76,7 @@ def logout_sessions():
 
 @app.route('/profile', methods=['GET'], strict_slashes=False)
 def get_profile():
-    """etrieves the email of a user based on their
+    """Retrieves the email of a user based on their
         session ID stored in a cookie.
 
     Returns:
