@@ -135,3 +135,50 @@ class Auth:
         self._db.update_user(user.id, session_id=None)
 
         return None
+
+    def get_reset_password_token(self, email: str) -> str:
+        """generates a reset password token for a user with a given email
+        address and updates the user's information in the database.
+
+        Args:
+            email (str):
+
+        Raises:
+            ValueError:
+
+        Returns:
+            str:
+        """
+        try:
+            user = self._db.find_user_by(**{'email': email})
+        except (InvalidRequestError, NoResultFound):
+            raise ValueError
+        res_tk = _generate_uuid()
+        self._db.update_user(user.id, **{'reset_token': res_tk})
+        return res_tk
+
+    def update_password(self, reset_token: str, password: str) -> None:
+        """updates a user's password in the database using a
+        reset token and a new password.
+
+        Args:
+            reset_token (str):
+            password (str):
+
+        Raises:
+            ValueError:
+
+        Returns:
+            _type_:
+        """
+        if reset_token is None or password is None:
+            return None
+        try:
+            user = self._db.find_user_by(**{'reset_token': reset_token})
+        except (InvalidRequestError, NoResultFound):
+            raise ValueError
+        hashpw = _hash_password(password)
+        self._db.update_user(user.id,
+                             hashed_password=hashpw,
+                             reset_token=None)
+        return
